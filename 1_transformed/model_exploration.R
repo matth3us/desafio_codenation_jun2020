@@ -17,8 +17,6 @@ train <-
     mutate_at(vars(c('TP_STATUS_REDACAO', 'TP_ANO_CONCLUIU')), function(x){as.factor(ifelse(is.na(x), -1, x))}) %>%
     select(-starts_with('IN_')) %>%
     select(-c(Q047, TP_NACIONALIDADE))
-  
-    
 
 # ggplot(data = train, aes(x = Q047)) + geom_histogram(stat='count', binwidth = 20)
 # Remover:
@@ -29,7 +27,7 @@ train <-
   # Q047
 # Testar corr entre IN_TREINEIRO e NU_NOTA_MT
 
-# Recipe for Data
+# Recipe for Datas  
 recipe_rf <- function(dataset){
     recipe(NU_NOTA_MT ~ ., data = dataset) %>%
     step_zv(all_predictors()) %>%
@@ -155,9 +153,11 @@ ggplot(data = var_importance, aes(x = id, y = delta_perc, group = grp)) + geom_l
 
 ### Modelo Final
 
+
 features <- 
     var_importance %>%
-    filter(id < 9)
+    filter(id < 9) %>%
+    select(features)
 
 final_train <- 
     train %>%
@@ -174,7 +174,11 @@ final_trained_model <-
   fit(NU_NOTA_MT ~ ., data = final_train)  
 
 saveRDS(final_trained_model, "./2_model/final_trained_model.rds")
-  
+saveRDS(features, "./2_model/final_features.rds")
+
+
+test <- 
+  read_csv("./0_raw/test.csv")
   
   
 # Seria feito o treino e teste dos modelos abaixo, mas parece que não será necessário

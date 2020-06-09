@@ -62,6 +62,17 @@ train_transformed <-
     mutate(TP_SEXO = as.numeric(as.factor(TP_SEXO))-1) %>%
     mutate_at(vars(starts_with('Q0')), as.factor) %>%
     mutate_at(c('TP_ST_CONCLUSAO','TP_COR_RACA','TP_ENSINO','TP_NACIONALIDADE','TP_PRESENCA_CH','TP_PRESENCA_CN','TP_PRESENCA_LC', 'TP_STATUS_REDACAO', 'TP_ANO_CONCLUIU', 'TP_SEXO'), as.factor)
+
+recipe_rf <- function(dataset){
+  recipe(NU_NOTA_MT ~ ., data = dataset) %>%
+    step_zv(all_predictors()) %>%
+    step_normalize(all_numeric()) %>%
+    step_dummy(one_of("TP_SEXO", "TP_COR_RACA", "TP_ST_CONCLUSAO","TP_PRESENCA_CN","TP_PRESENCA_CH","TP_PRESENCA_LC","TP_STATUS_REDACAO", 'TP_ANO_CONCLUIU')) %>%
+    step_dummy(starts_with('Q0')) %>%
+    #step_corr(all_predictors(), threshold = .9) %>%
+    prep(.)
+}
+
   
 write_rds(train_transformed, "./1_transformed/train_transf.rds")
   
